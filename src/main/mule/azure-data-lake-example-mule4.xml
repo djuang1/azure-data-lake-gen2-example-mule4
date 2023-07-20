@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:azure-data-lake-storage="http://www.mulesoft.org/schema/mule/azure-data-lake-storage"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/azure-data-lake-storage http://www.mulesoft.org/schema/mule/azure-data-lake-storage/current/mule-azure-data-lake-storage.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2d015954-44df-4a48-a463-658159dac4c6" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<azure-data-lake-storage:config name="Azure_Data_Lake_Storage_Connector_Config" doc:name="Azure Data Lake Storage Connector Config" doc:id="133eceed-ff23-412a-a742-01920ea9e603" >
+		<azure-data-lake-storage:shared-access-signature-connection accountName="muledlsg2" dnsSuffix="dfs.core.windows.net"/>
+	</azure-data-lake-storage:config>
+	<flow name="azure-data-lake-example-mule4Flow" doc:id="0909c9a4-2290-44e4-b615-1a7c3d2bc42b" >
+		<http:listener doc:name="Listener" doc:id="2be4a148-7126-4a71-8b91-3e1aef7037f4" config-ref="HTTP_Listener_config" path="/create"/>
+		<azure-data-lake-storage:create-file-system doc:name="Create File System" doc:id="3d1f5ab2-9d3d-49e9-849b-17fac23deeaf" config-ref="Azure_Data_Lake_Storage_Connector_Config" filesystem="muledemo" timeout="60"/>
+		<ee:transform doc:name="Transform Message" doc:id="39e4f79b-457f-43cf-a6da-470ccc8bc3ad" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
